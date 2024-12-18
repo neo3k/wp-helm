@@ -1,0 +1,6 @@
+apiVersion: v2
+name: wordpress-optimized
+description: A Helm chart for deploying an optimized WordPress stack
+type: application
+version: 0.2.0
+appVersion: "1.0"

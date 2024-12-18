@@ -1,0 +1,16 @@
+# MariaDB
+mariadb:
+  storage: 10Gi
+  database: wordpress
+  user: wpuser
+
+# WordPress
+wordpress:
+  storage: 10Gi
+  phpMemoryLimit: 512M
+  replicas: 1
+
+# Redis
+redis:
+  enabled: true
+  storage: ""

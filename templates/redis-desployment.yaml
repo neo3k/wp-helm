@@ -1,0 +1,43 @@
+# Redis Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.appName }}-redis
+  namespace: default
+  labels:
+    app: {{ .Values.appName }}-redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.appName }}-redis
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.appName }}-redis
+    spec:
+      containers:
+      - name: redis
+        image: redis:alpine
+        ports:
+        - containerPort: 6379
+        volumeMounts:
+        - name: redis-storage
+          mountPath: /data
+        command: ["redis-server", "--appendonly", "yes"]
+      volumes:
+      - name: redis-storage
+        emptyDir: {}  # Puedes cambiar esto a un PVC si necesitas persistencia
+---
+# Redis Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.appName }}-redis
+  namespace: default
+spec:
+  ports:
+  - port: 6379
+    targetPort: 6379
+  selector:
+    app: {{ .Values.appName }}-redis

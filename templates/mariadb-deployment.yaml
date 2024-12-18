@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.appName }}-mariadb
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.appName }}-mariadb
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.appName }}-mariadb
+    spec:
+      containers:
+      - name: mariadb
+        image: mariadb:10.6
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.appName }}-credentials
+              key: rootPassword
+        - name: MYSQL_DATABASE
+          value: {{ .Values.mariadb.database }}
+        - name: MYSQL_USER
+          value: {{ .Values.mariadb.user }}
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.appName }}-credentials
+              key: userPassword
+        ports:
+        - containerPort: 3306
+        volumeMounts:
+        - name: mariadb-storage
+          mountPath: /var/lib/mysql
+        - name: mariadb-config
+          mountPath: /etc/mysql/conf.d
+      volumes:
+      - name: mariadb-storage
+        persistentVolumeClaim:
+          claimName: {{ .Values.appName }}-mariadb-pvc
+      - name: mariadb-config
+        configMap:
+          name: {{ .Values.appName }}-mariadb-config
+---
+# MariaDB Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.appName }}-mariadb
+  namespace: default
+spec:
+  ports:
+  - port: 3306
+    targetPort: 3306
+  selector:
+    app: {{ .Values.appName }}-mariadb
