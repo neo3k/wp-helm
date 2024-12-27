@@ -21,8 +21,8 @@ spec:
               number: 80
 {{- end }}
   tls:
-    - hosts:
 {{- range .Values.domains }}
+    - hosts:
       - "{{ . }}"
+      secretName: "{{ $.Values.appName }}-{{ . | replace '.' '-' }}-tls"
 {{- end }}
-      secretName: {{ .Values.tlsSecretName | default (printf "%s-tls" .Values.appName) }}
