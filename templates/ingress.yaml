@@ -9,7 +9,7 @@ metadata:
 spec:
   rules:
 {{- range .Values.domains }}
-  - host: {{ . }}
+  - host: "{{ . }}"
     http:
       paths:
       - path: /
@@ -23,6 +23,6 @@ spec:
   tls:
     - hosts:
 {{- range .Values.domains }}
-        - {{ . }}
+      - "{{ . }}"
 {{- end }}
-      secretName: {{ .Values.tlsSecretName | default (printf \"%s-tls\" .Values.appName) }}
+      secretName: {{ .Values.tlsSecretName | default (printf "%s-tls" .Values.appName) }}
