@@ -7,31 +7,22 @@ metadata:
     kubernetes.io/ingress.class: traefik
     cert-manager.io/cluster-issuer: letsencrypt
 spec:
-{{- $domains := .Values.domains | toYaml | fromYaml }}
-{{- if $domains }}
   rules:
-  {{- range $domains }}
-    - host: "{{ . }}"
-      http:
-        paths:
-        - path: /
-          pathType: Prefix
-          backend:
-            service:
-              name: {{ $.Values.appName }}-service
-              port:
-                number: 80
-  {{- end }}
+{{- range .Values.domains }}
+  - host: "{{ . }}"
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ $.Values.appName }}-service
+            port:
+              number: 80
+{{- end }}
   tls:
     - hosts:
-    {{- range $domains }}
+{{- range .Values.domains }}
       - "{{ . }}"
-    {{- end }}
-      secretName: {{ .Values.tlsSecretName | default (printf "%s-tls" .Values.appName) }}
-{{- else }}
-  defaultBackend:
-    service:
-      name: {{ .Values.appName }}-service
-      port:
-        number: 80
 {{- end }}
+      secretName: {{ .Values.tlsSecretName | default (printf "%s-tls" .Values.appName) }}
